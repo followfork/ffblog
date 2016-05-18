@@ -1,0 +1,16 @@
+Express + Mongodb
+
+#环境
+Node.js ： 0.10.32
+
+Express ： 4.10.2
+
+MongoDB ： 2.6.1
+
+
+#安装 Express
+$ npm install -g express-generator
+
+#新建一个工程
+$ express -e ffblog
+$ cd ffblog && npm install
