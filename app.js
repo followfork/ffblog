@@ -10,6 +10,9 @@ var settings = require('./settings');
 
 var app = express();
 
+var session = require('express-session');
+var MongoStore = require('connect-mongo');
+
 // view engine setup
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
@@ -22,6 +25,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+  secret: settings.cookieSecret,
+  key: settings.db,  // cookie name
+  cookie: {maxAge: 1000*60*60*24*30},
+  store: new MongoStore({
+    url: 'mongodb://localhost/ffblog'
+  })
+}));
 
 routes(app);
 
