@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 /**
- * Module dependencies.
+ * Module dependencies.   可执行文件
  */
 
 var app = require('../app');
+// 引入debug模块，打印调试日志
 var debug = require('debug')('ffblog:server');
 var http = require('http');
 
