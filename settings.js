@@ -1,4 +1,4 @@
-module.export = {
+module.exports = {
 	cookieSecret: 'myffblog',
 	db: 'ffblog',
 	host: 'localhost',

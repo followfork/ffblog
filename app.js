@@ -11,7 +11,7 @@ var settings = require('./settings');
 var app = express();
 
 var session = require('express-session');
-var MongoStore = require('connect-mongo');
+var MongoStore = require('connect-mongo')(session);
 
 // view engine setup
 app.set('port', process.env.PORT || 3000);
@@ -30,7 +30,9 @@ app.use(session({
   key: settings.db,  // cookie name
   cookie: {maxAge: 1000*60*60*24*30},
   store: new MongoStore({
-    url: 'mongodb://localhost/ffblog'
+    db: settings.db,
+    host: settings.host,
+    port: settings.port
   })
 }));
 
