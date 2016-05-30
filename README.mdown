@@ -1,16 +1,129 @@
 Express + Mongodb
 
 #环境
-Node.js ： 0.10.32
+Node.js ： v4.2.3
 
-Express ： 4.10.2
+MongoDB ： mongodb@2.1.20 
+##启动mongodb服务
+在bin目录下
+```
+./mongod --dbpath ../blog
+(根目录)
+```
+##启动mongo
+```
+./mongo
+```
+##
+```
+use blog
+db.users.find()
+```
 
-MongoDB ： 2.6.1
 
 #安装 Express
 $ npm install -g express-generator
 
 #新建一个工程
 $ express -e ffblog
+
 $ cd ffblog && npm install
+
+# run
+$ DEBUG=ffblog:* npm start
+（上面的代码报错的话，可以这样运行启动项目：npm start）
+> 注意 “nodejs exprss Port 3000 is already in use” 换成  $ node app
+
+
+#安装 MongoDB
+ 运行：
+ ```
+ ./mongod --dbpath ../ffblog/
+ ```
+ > (./mongod --dbpath /Users/xw/2016/mongodb/ffblog)
+ 
+
+#连接MongoDB
+使用官方提供的 node-mongodb-native 驱动模块
+安装 
+ ```
+ "mongodb": "^2.1.20"
+ ```
+
+
+根目录中创建 settings.js 文件
+
+```
+module.exports = { 
+  cookieSecret: 'myblog', 
+  db: 'ffblog', 
+  host: 'localhost',
+  port: 27017
+}; 
+```
+
+新建 models 文件夹，并在 models 文件夹下新建 db.js 
+
+```
+var settings = require('../settings'),
+        Db = require('mongodb').Db,
+        Connection = require('mongodb').Connection,
+        Server = require('mongodb').Server;
+    module.exports = new Db(settings.db, new Server(settings.host, settings.port),
+ {safe: true});
+```
+
+这样，就可以通过 require 这个文件来对数据库进行读写了。
+
+app.js 中添加
+
+```
+var settings = require('./settings');
+```
+
+# 用express会话中间件， 把会话信息存到数据库中
+```
+"express-session": "1.9.1",
+"connect-mongo": "0.4.1"
+```
+> (connect-mongo 版本为 0.8.0)
+
+注意： 如报"error setting ttl index on collection : sessions"错误，把"mongodb"&"connect-mongo"版本号更到最新。
+
+打开app.js，添加以下代码：
+```
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
+
+app.use(session({
+  secret: settings.cookieSecret,
+  key: settings.db,//cookie name
+  cookie: {maxAge: 1000 * 60 * 60 * 24 * 30},//30 days
+  store: new MongoStore({
+    db: settings.db,
+    host: settings.host,
+    port: settings.port
+  })
+}));
+```
+
+注意： connect-mongo 最新版需要改成如：
+```
+store: new MongoStore({
+  url: 'mongodb://localhost/ffblog'
+})
+```
+
+#supervisor
+supervisor 都会自动帮我们重启应用。通过：
+```
+$ npm install -g supervisor
+```
+
+安装 supervisor 。使用 supervisor 命令启动 app.js：
+```
+$ supervisor app.js
+```
+
+
 
