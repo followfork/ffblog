@@ -5,16 +5,58 @@
 // router.get('/', function(req, res, next) {
 //   res.render('index', { title: 'Express' });
 // });
+var crypto = require('crypto'),
+	User = require('../models/user.js')
 
 module.exports = function(app) {
 	  app.get('/', function (req, res) {
 	    res.render('index', { title: '主页' });
 	  });
+
 	  app.get('/reg', function (req, res) {
 	    res.render('reg', { title: '注册' });
 	  });
+
 	  app.post('/reg', function (req, res) {
+	  // 	var name = req.body.name,
+	  // 	 	possword = req.body.possword,
+	  // 	 	possword_re = req.body['password-repeat'];
+	  // 	//  检验密码是否一致
+	  // 	if（possword != possword_re){
+	  // 		req.flash('error', '密码不一致');
+	  // 		return res.redirect('/reg');
+	 	//  }
+	 	//  // 生成md5
+	 	// var md5 = crypto.createHash('md5'),
+	 	//  	 possword = md5.update(possword).digest('hex');
+	 	// var newUser = new User({
+	 	// 	name: name,
+	 	// 	possword: password,
+	 	// 	email: req.body.email
+	 	// });
+	 	// //检测 用户信息是否存在
+	 	// User.get(newUser.name, function (err, user){
+	 	// 	if(err){
+	 	// 		req.flash('error', err);
+	 	// 		return res.redirect('/');
+	 	// 	}
+	 	// 	if(user){
+	 	// 		req.flash('error', '用户已存在')；
+	 	// 		return res.redirect('/reg');
+	 	// 	}
+		 // 	// 不存在 则 新增用户
+		 // 	newUser.save(function (err, user){
+		 // 		if(err){
+		 // 			req.flash('error', err);
+		 // 			return res.redirect('/reg');
+		 // 		}
+		 // 		req.session.user = newUser;
+		 // 		req.flash('success', '注册成功');
+		 // 		res.redirect('/');
+		 // 	})
+	  //   })
 	  });
+
 	  app.get('/login', function (req, res) {
 	    res.render('login', { title: '登录' });
 	  });
@@ -27,4 +69,4 @@ module.exports = function(app) {
 	  });
 	  app.get('/logout', function (req, res) {
 	  });
-};
+}
