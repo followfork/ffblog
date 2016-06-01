@@ -4,6 +4,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
 
 var routes = require('./routes/index');
 var settings = require('./settings');
@@ -12,8 +14,6 @@ var flash = require('connect-flash');
 
 var app = express();
 
-var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
 
 // view engine setup
 app.set('port', process.env.PORT || 3000);
