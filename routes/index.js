@@ -25,16 +25,22 @@ var upload = multer({
 
 module.exports = function(app) {
 	  app.get('/', function (req, res) {
-	  	Post.getAll(null, function (err, posts){
+	  	// 判断是否为第 一页
+	    var page = parseInt(req.query.p) || 1;
+	    // 查询并返回第 page 页的 10 篇文章
+	  	Post.getTen(null, page, function (err, posts, total){
 	  		if(err) {
 	  			posts = [];
 	  		}
 	  		res.render('index', { 
-	    	title: '主页',
-	    	user: req.session.user,
-	    	posts: posts,
-	    	success: req.flash('success').toString(),
-	    	error: req.flash('error').toString()
+		    	title: '主页',
+		    	user: req.session.user,
+		    	posts: posts,
+		    	page: page,
+		    	isFirstPage: (page - 1) == 0,
+		    	isLastPage: ((page - 1) * 10 + posts.length) == total,
+		    	success: req.flash('success').toString(),
+		    	error: req.flash('error').toString()
 	     });
 	  	})
 	  });
@@ -170,6 +176,7 @@ module.exports = function(app) {
 
 	  // 用户文章列表
 	  app.get('/u/:name', function (req, res) {
+	  	  var page = parseInt(req.query.p, 10) || 1;
 		  //检查用户是否存在
 		  User.get(req.params.name, function (err, user) {
 		    if (!user) {
@@ -177,7 +184,7 @@ module.exports = function(app) {
 		      return res.redirect('/');//用户不存在则跳转到主页
 		    }
 		    //查询并返回该用户的所有文章
-		    Post.getAll(user.name, function (err, posts) {
+		    Post.getTen(user.name, page, function (err, posts, total) {
 		      if (err) {
 		        req.flash('error', err); 
 		        return res.redirect('/');
@@ -186,6 +193,9 @@ module.exports = function(app) {
 		        title: user.name,
 		        posts: posts,
 		        user : req.session.user,
+		        page: page,
+		        isFirstPage: (page - 1) == 0,
+		        isLastPage: ((page - 1) * 10 + posts.length) == total,
 		        success : req.flash('success').toString(),
 		        error : req.flash('error').toString()
 		      });
