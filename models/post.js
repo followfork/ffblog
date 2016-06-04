@@ -1,5 +1,16 @@
 var mongodb = require('./db');
-var markdown = require('markdown').markdown;
+var marked = require('marked');
+
+marked.setOptions({
+  renderer: new marked.Renderer(),
+  gfm: false,
+  tables: false,
+  breaks: false,
+  pedantic: false,
+  sanitize: false,
+  smartLists: false,
+  smartypants: false
+});
 
 function Post(name, title, post) {
   this.name = name;
@@ -54,7 +65,7 @@ Post.prototype.save = function(callback) {
 };
 
 //读取文章及其相关信息
-Post.get = function(name, callback) {
+Post.getAll = function(name, callback) {
   //打开数据库
   mongodb.open(function (err, db) {
     if (err) {
@@ -79,9 +90,40 @@ Post.get = function(name, callback) {
           return callback(err);//失败！返回 err
         }
         docs.forEach(function (doc) {
-          doc.post = markdown.toHTML(doc.post);
+          doc.post = marked(doc.post);
         });
         callback(null, docs);//成功！以数组形式返回查询的结果
+      });
+    });
+  });
+};
+
+//获取一篇文章
+Post.getOne = function(name, day, title, callback) {
+  //打开数据库
+  mongodb.open(function (err, db) {
+    if (err) {
+      return callback(err);
+    }
+    //读取 posts 集合
+    db.collection('posts', function (err, collection) {
+      if (err) {
+        mongodb.close();
+        return callback(err);
+      }
+      //根据用户名、发表日期及文章名进行查询
+      collection.findOne({
+        "name": name,
+        "time.day": day,
+        "title": title
+      }, function (err, doc) {
+        mongodb.close();
+        if (err) {
+          return callback(err);
+        }
+        //解析 markdown 为 html
+        doc.post = marked(doc.post);
+        callback(null, doc);//返回查询的一篇文章
       });
     });
   });
