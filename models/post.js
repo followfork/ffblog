@@ -37,7 +37,8 @@ Post.prototype.save = function(callback) {
       name: this.name,
       time: time,
       title: this.title,
-      post: this.post
+      post: this.post,
+      comments: []
   };
   //打开数据库
   mongodb.open(function (err, db) {
@@ -122,7 +123,12 @@ Post.getOne = function(name, day, title, callback) {
           return callback(err);
         }
         //解析 markdown 为 html
-        doc.post = marked(doc.post);
+        if(doc) {
+          doc.post = marked(doc.post);
+          doc.comments.forEach(function(comment){
+            comment.content = marked(comment.content);
+          });
+        }
         callback(null, doc);//返回查询的一篇文章
       });
     });
