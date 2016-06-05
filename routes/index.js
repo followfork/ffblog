@@ -359,6 +359,16 @@ module.exports = function(app) {
 		  });
 		});
 
+		// 友情链接
+		app.get('/links', function (req, res) {
+		  res.render('links', {
+		    title: '友情链接',
+		    user: req.session.user,
+		    success: req.flash('success').toString(),
+		    error: req.flash('error').toString()
+		  });
+		});
+
 	  function checkLogin(req, res, next) {
 	  	if(!req.session.user) {
 	  		req.flash('error', '未登录');
